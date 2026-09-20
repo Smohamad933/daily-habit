@@ -1,0 +1,5 @@
+data/*
+!data/web.config
+*.db
+*.db-wal
+*.db-shm
