@@ -23,6 +23,12 @@
   const ntb = $('#navToggle');
   if (ntb) ntb.addEventListener('click', () => $('#navLinks').classList.toggle('open'));
 
+  /* ---------- شیت اقدام سریع (دکمه +) ---------- */
+  const qbtn = $('#quickBtn'), qsheet = $('#quickSheet'), qov = $('#sheetOverlay');
+  const closeSheet = () => { if (qsheet) qsheet.classList.remove('show'); if (qov) qov.classList.remove('show'); };
+  if (qbtn) qbtn.addEventListener('click', () => { qsheet.classList.add('show'); qov.classList.add('show'); });
+  if (qov) qov.addEventListener('click', closeSheet);
+
   /* ---------- توست ---------- */
   window.toast = function (msg, type) {
     const wrap = $('#toastWrap'); if (!wrap) { alert(msg); return; }

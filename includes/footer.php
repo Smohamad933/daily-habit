@@ -1,10 +1,12 @@
+<?php /** پاورقی — قرارداد ثابت:
+ *  - اسکریپت‌ها: charts.js, app.js, push.js
+ *  - window.APP = { api, sw, vapid, csrf, theme } فقط وقتی کاربر لاگین است
+ */ ?>
 </main>
-<footer class="site-footer">
-  <div class="container"><?= nl2br(e(content('footer_text', ''))) ?> — نسخه <?= e(APP_VERSION) ?></div>
-</footer>
+
 <?php if ($cu = ($u ?? current_user())): ?>
 <?php
-// کلیدهای پوش را برای کاربر لاگین‌شده آماده کن (تا سابسکریپشن بتواند شکل بگیرد)
+// کلیدهای پوش برای کاربر لاگین‌شده (سابسکریپشن وب‌پوش)
 $vapidPublic = setting('vapid_public');
 if (!$vapidPublic) {
     $vk = vapid_keys();
@@ -25,5 +27,9 @@ window.APP = {
 <script src="<?= url('assets/js/app.js') ?>"></script>
 <script src="<?= url('assets/js/push.js') ?>"></script>
 <?php endif; ?>
+
+<footer class="site-footer">
+  <div class="container"><?= nl2br(e(content('footer_text', ''))) ?></div>
+</footer>
 </body>
 </html>

@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_check()) {
             $weekStart = $type === 'weekly' ? j_week_bounds(...j_parse($date))[0] : '';
             db()->prepare("INSERT INTO tasks (user_id,title,type,jdate,week_start,hour,priority) VALUES (?,?,?,?,?,?,?)")
                 ->execute([$uid, $title, $type, $type === 'weekly' ? '' : $date, $weekStart, $hour, $priority]);
-            flash('success', 'تسک «' . $title . '» اضافه شد.');
+            flash('success', '«' . $title . '» اضافه شد ✅');
         }
     }
     if ($act === 'delete') {
@@ -29,14 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_check()) {
 }
 
 $day = ai_day_stats($uid, $today);
-[$ws, $we] = j_week_bounds($jy, $jm, $jd);
 
-// تسک‌های آینده و گذشته
-$st = db()->prepare("SELECT * FROM tasks WHERE user_id=? AND type IN ('daily','once') AND jdate > ? AND status<>'deleted' ORDER BY jdate, hour LIMIT 20");
+$st = db()->prepare("SELECT * FROM tasks WHERE user_id=? AND type IN ('daily','once') AND jdate > ? AND status<>'deleted' ORDER BY jdate, hour LIMIT 15");
 $st->execute([$uid, $today]);
 $upcoming = $st->fetchAll();
 
-$st = db()->prepare("SELECT * FROM tasks WHERE user_id=? AND type IN ('daily','once') AND jdate < ? AND status='pending' AND jdate >= ? ORDER BY jdate DESC LIMIT 20");
+$st = db()->prepare("SELECT * FROM tasks WHERE user_id=? AND type IN ('daily','once') AND jdate < ? AND status='pending' AND jdate >= ? ORDER BY jdate DESC LIMIT 10");
 $st->execute([$uid, $today, j_str(...j_add_days($jy, $jm, $jd, -14))]);
 $overdue = $st->fetchAll();
 
@@ -46,95 +44,90 @@ include __DIR__ . '/includes/header.php';
 ?>
 <script>window.APP.loggedIn = true;</script>
 <h1>✅ تسک‌ها</h1>
-<div class="grid dash" style="align-items:start">
-  <div>
-    <div class="card">
-      <h2>امروز — <?= j_format($today, false) ?></h2>
-      <?php if (!$day['tasks']): ?><p class="muted">تسکی برای امروز نیست.</p><?php endif; ?>
-      <div class="item-list">
-        <?php foreach ($day['tasks'] as $t): ?>
-        <div class="item <?= $t['status'] === 'done' ? 'done' : '' ?>">
-          <button class="check <?= $t['status'] === 'done' ? 'on' : ($t['status'] === 'skipped' ? 'miss' : '') ?>" data-task="<?= $t['id'] ?>">✓</button>
-          <div class="grow">
-            <div class="title"><?= e($t['title']) ?></div>
-            <div class="meta">
-              <?= $t['hour'] ? '⏰ ' . fa_num($t['hour']) : '' ?>
-              <?php if ($t['type'] === 'weekly'): ?><span class="chip">هفتگی</span><?php endif; ?>
-              <?php if ($t['source'] === 'ai'): ?><span class="chip c-info">🤖 بازبرنامه‌ریزی</span><?php endif; ?>
-              <?php if ($t['priority'] == 1): ?><span class="chip c-danger">فوری</span><?php endif; ?>
-              <?php if ($t['status'] === 'skipped'): ?><span class="chip c-danger">امروز انجام نشد</span><?php endif; ?>
-            </div>
-          </div>
-          <?php if ($t['status'] === 'pending'): ?>
-            <button class="btn sm ghost miss-btn" data-task="<?= $t['id'] ?>" data-title="<?= e($t['title']) ?>">انجام نشد</button>
-          <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
-      </div>
-    </div>
 
-    <?php if ($overdue): ?>
-    <div class="card mt">
-      <h2>⚠ عقب‌افتاده‌های ۲ هفته اخیر</h2>
-      <div class="item-list">
-        <?php foreach ($overdue as $t): ?>
-        <div class="item">
-          <div class="grow">
-            <div class="title"><?= e($t['title']) ?></div>
-            <div class="meta"><?= j_format($t['jdate'], false) ?></div>
-          </div>
-          <button class="check" data-task="<?= $t['id'] ?>">✓</button>
-          <button class="btn sm ghost miss-btn" data-task="<?= $t['id'] ?>" data-title="<?= e($t['title']) ?>">بررسی</button>
-        </div>
-        <?php endforeach; ?>
-      </div>
+<!-- تسک جدید -->
+<div class="card" id="addCard" style="margin-bottom:14px">
+  <h2>➕ تسک جدید</h2>
+  <form method="post">
+    <?= csrf_field() ?><input type="hidden" name="act" value="add">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="text" name="title" id="newTitle" required placeholder="مثلاً: تمرین آواز خوانی" style="flex:2;min-width:180px">
+      <input type="text" name="jdate" dir="ltr" placeholder="تاریخ <?= e($today) ?>" value="<?= e($today) ?>" style="flex:1;min-width:110px">
+      <input type="time" name="hour" style="flex:1;min-width:100px">
+      <select name="type" style="flex:1;min-width:110px">
+        <option value="daily">روزانه</option>
+        <option value="weekly">هفتگی</option>
+        <option value="once">موردی/قرار</option>
+      </select>
+      <button class="btn">افزودن</button>
     </div>
-    <?php endif; ?>
+  </form>
+</div>
 
-    <?php if ($upcoming): ?>
-    <div class="card mt">
-      <h2>🔜 آینده</h2>
-      <div class="item-list">
-        <?php foreach ($upcoming as $t): ?>
-        <div class="item">
-          <div class="grow">
-            <div class="title"><?= e($t['title']) ?></div>
-            <div class="meta"><?= j_format($t['jdate'], false) ?> <?= $t['hour'] ? '⏰ ' . fa_num($t['hour']) : '' ?></div>
-          </div>
-          <form method="post" onsubmit="return confirm('حذف شود؟')"><?= csrf_field() ?>
-            <input type="hidden" name="act" value="delete"><input type="hidden" name="id" value="<?= $t['id'] ?>">
-            <button class="btn sm ghost">🗑</button>
-          </form>
+<div class="card">
+  <h2>امروز <?php if ($day['total']): ?><span class="chip c-primary" style="margin-inline-start:auto"><?= fa_num($day['done_count']) ?> از <?= fa_num($day['total']) ?></span><?php endif; ?></h2>
+  <?php if (!$day['tasks']): ?><p class="muted">تسکی برای امروز نیست ☀</p><?php endif; ?>
+  <div class="item-list">
+    <?php foreach ($day['tasks'] as $t): ?>
+    <div class="item <?= $t['status'] === 'done' ? 'done' : '' ?>">
+      <button class="check <?= $t['status'] === 'done' ? 'on' : ($t['status'] === 'skipped' ? 'miss' : '') ?>" data-task="<?= $t['id'] ?>">✓</button>
+      <div class="grow">
+        <div class="title"><?= e($t['title']) ?></div>
+        <div class="meta">
+          <?= $t['hour'] ? '⏰ ' . fa_num($t['hour']) : '' ?>
+          <?php if ($t['type'] === 'weekly'): ?> <span class="chip">هفتگی</span><?php endif; ?>
+          <?php if ($t['source'] === 'ai'): ?> <span class="chip c-info">🤖 بازبرنامه‌ریزی</span><?php endif; ?>
+          <?php if ($t['priority'] == 1): ?> <span class="chip c-danger">فوری</span><?php endif; ?>
         </div>
-        <?php endforeach; ?>
       </div>
+      <?php if ($t['status'] === 'pending'): ?>
+        <button class="miss-link miss-btn" data-task="<?= $t['id'] ?>" data-title="<?= e($t['title']) ?>">انجام نشد</button>
+      <?php endif; ?>
     </div>
-    <?php endif; ?>
-  </div>
-
-  <div class="card">
-    <h2>➕ تسک جدید</h2>
-    <form method="post" class="stack">
-      <?= csrf_field() ?><input type="hidden" name="act" value="add">
-      <div class="field"><label>عنوان تسک</label><input type="text" name="title" required placeholder="مثلاً: تمرین آواز خوانی"></div>
-      <div class="field"><label>نوع</label>
-        <select name="type">
-          <option value="daily">روزانه (یک تاریخ مشخص)</option>
-          <option value="weekly">هفتگی (برای کل هفته جاری)</option>
-          <option value="once">موردی / قرار ملاقات</option>
-        </select>
-      </div>
-      <div class="field"><label>تاریخ (شمسی)</label><input type="text" name="jdate" dir="ltr" placeholder="<?= e($today) ?>" value="<?= e($today) ?>"></div>
-      <div class="inline-fields">
-        <div class="field"><label>ساعت (اختیاری)</label><input type="time" name="hour"></div>
-        <div class="field"><label>اولویت</label>
-          <select name="priority"><option value="2">عادی</option><option value="1">فوری</option><option value="3">کم‌اهمیت</option></select>
-        </div>
-      </div>
-      <button class="btn block">افزودن تسک</button>
-    </form>
-    <p class="muted small mt">💡 اگر تسکی را «انجام نشد» بزنید، هوش مصنوعی دلیلش را می‌پرسد و در روزهای کم‌تراکم هفته دوباره برنامه‌ریزی‌اش می‌کند.</p>
+    <?php endforeach; ?>
   </div>
 </div>
+
+<?php if ($overdue): ?>
+<div class="card mt">
+  <h2>⚠ عقب‌افتاده‌ها</h2>
+  <div class="item-list">
+    <?php foreach ($overdue as $t): ?>
+    <div class="item">
+      <button class="check" data-task="<?= $t['id'] ?>">✓</button>
+      <div class="grow">
+        <div class="title"><?= e($t['title']) ?></div>
+        <div class="meta"><?= j_format($t['jdate'], false) ?></div>
+      </div>
+      <button class="miss-link miss-btn" data-task="<?= $t['id'] ?>" data-title="<?= e($t['title']) ?>">بررسی دلیل</button>
+    </div>
+    <?php endforeach; ?>
+  </div>
+</div>
+<?php endif; ?>
+
+<?php if ($upcoming): ?>
+<div class="card mt">
+  <h2>🔜 روزهای آینده</h2>
+  <div class="item-list">
+    <?php foreach ($upcoming as $t): ?>
+    <div class="item">
+      <div class="grow">
+        <div class="title"><?= e($t['title']) ?></div>
+        <div class="meta"><?= j_format($t['jdate'], false) ?> <?= $t['hour'] ? '⏰ ' . fa_num($t['hour']) : '' ?></div>
+      </div>
+      <form method="post" onsubmit="return confirm('حذف شود؟')"><?= csrf_field() ?>
+        <input type="hidden" name="act" value="delete"><input type="hidden" name="id" value="<?= $t['id'] ?>">
+        <button class="icon-btn" title="حذف">🗑</button>
+      </form>
+    </div>
+    <?php endforeach; ?>
+  </div>
+</div>
+<?php endif; ?>
+
+<?php if (isset($_GET['new'])): ?>
+<script>document.getElementById('newTitle').focus();</script>
+<?php endif; ?>
 <?php include __DIR__ . '/includes/skip_modal.php'; ?>
 <?php include __DIR__ . '/includes/footer.php'; ?>
