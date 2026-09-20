@@ -139,18 +139,28 @@ function iran_provinces(): array {
 
 /** تولید جفت‌کلید VAPID (ES256/P-256) برای پوش نوتیفیکیشن */
 function generate_vapid_keys(): array {
-    $key = openssl_pkey_new([
-        'curve_name' => 'prime256v1',
-        'private_key_type' => OPENSSL_KEYTYPE_EC,
-    ]);
-    if (!$key) return [];
-    $details = openssl_pkey_get_details($key);
-    $pem = '';
-    openssl_pkey_export($key, $pem);
-    return [
-        'private' => $pem,
-        'public'  => base64url_encode("\x04" . $details['ec']['x'] . $details['ec']['y']),
-    ];
+    // اگر افزونه openssl فعال نباشد، پوش غیرفعال می‌شود ولی سایت به کار خود ادامه می‌دهد
+    if (!function_exists('openssl_pkey_new') || !function_exists('openssl_pkey_get_details')
+        || !function_exists('openssl_pkey_export') || !defined('OPENSSL_KEYTYPE_EC')) {
+        return [];
+    }
+    try {
+        $key = openssl_pkey_new([
+            'curve_name' => 'prime256v1',
+            'private_key_type' => OPENSSL_KEYTYPE_EC,
+        ]);
+        if (!$key) return [];
+        $details = openssl_pkey_get_details($key);
+        if (empty($details['ec']['x']) || empty($details['ec']['y'])) return [];
+        $pem = '';
+        openssl_pkey_export($key, $pem);
+        return [
+            'private' => $pem,
+            'public'  => base64url_encode("\x04" . $details['ec']['x'] . $details['ec']['y']),
+        ];
+    } catch (Throwable $e) {
+        return [];
+    }
 }
 
 function base64url_encode(string $data): string {
