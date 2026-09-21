@@ -38,7 +38,7 @@
     const yAt = v => pad.t + ch - (Math.min(v, yMax) / yMax) * ch;
 
     // سطح زیر منحنی
-    const color = opts.color || '#12633e';
+    const color = opts.color || '#7652d6';
     ctx.beginPath();
     values.forEach((v, i) => { const x = xAt(i), y = yAt(v); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
     ctx.strokeStyle = color; ctx.lineWidth = 2.4; ctx.lineJoin = 'round'; ctx.stroke();
@@ -73,7 +73,7 @@
       const x = pad.l + i * step + step / 2 - bw / 2;
       const bh = (Math.min(v, yMax) / yMax) * ch;
       const grad = ctx.createLinearGradient(0, pad.t + ch - bh, 0, pad.t + ch);
-      grad.addColorStop(0, opts.color || '#258a57'); grad.addColorStop(1, '#12633e');
+      grad.addColorStop(0, opts.color || '#94c83d'); grad.addColorStop(1, '#7652d6');
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.roundRect ? ctx.roundRect(x, pad.t + ch - bh, bw, bh, 6) : ctx.rect(x, pad.t + ch - bh, bw, bh);
@@ -122,7 +122,7 @@
       ctx.fillStyle = muted; ctx.textAlign = 'right';
       ctx.fillText(String(it.label).slice(0, 16), padL - 8, y + 15);
       const bw = (w - padL - padR) * (it.value / max);
-      ctx.fillStyle = it.color || '#12633e';
+      ctx.fillStyle = it.color || '#7652d6';
       ctx.beginPath();
       ctx.roundRect ? ctx.roundRect(padL, y + 4, Math.max(3, bw), 16, 6) : ctx.rect(padL, y + 4, Math.max(3, bw), 16);
       ctx.fill();
@@ -142,7 +142,7 @@
       '<circle cx="75" cy="75" r="' + R + '" fill="none" stroke="url(#gr)" stroke-width="12" stroke-linecap="round"' +
       ' stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - val / 100)) + '"/>' +
       '<defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="#12633e"/><stop offset="1" stop-color="#258a57"/></linearGradient></defs></svg>' +
+      '<stop offset="0" stop-color="#7652d6"/><stop offset="1" stop-color="#94c83d"/></linearGradient></defs></svg>' +
       '<div class="ring-txt"><b>' + val.toLocaleString('fa-IR') + '٪</b><span>' + label + '</span></div>';
   };
 })();

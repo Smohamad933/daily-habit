@@ -34,9 +34,9 @@ $phpIni = php_ini_loaded_file() ?: 'php.ini';
 body{font-family:Tahoma,'Segoe UI';background:#0f1220;color:#eef0fa;margin:0;padding:24px}
 .card{background:#181c30;border:1px solid #2a2f4a;border-radius:16px;padding:26px;max-width:820px;margin:20px auto}
 h1{font-size:22px} table{width:100%;border-collapse:collapse;font-size:14px}
-td{padding:9px 8px;border-bottom:1px solid #2a2f4a;vertical-align:top}.req-icon{width:19px;height:19px;display:block}.req-icon.ok{color:#258a57}.req-icon.bad{color:#ef4767}
+td{padding:9px 8px;border-bottom:1px solid #2a2f4a;vertical-align:top}.req-icon{width:19px;height:19px;display:block}.req-icon.ok{color:#94c83d}.req-icon.bad{color:#ef4767}
 .h{color:#98a0bd;font-size:12.5px} code{background:#232842;padding:2px 8px;border-radius:6px;direction:ltr;display:inline-block;font-size:12px}
-a{color:#6e8f76} .ok-all{background:#123527;border-color:#258a57}
+a{color:#8b76b7} .ok-all{background:#123527;border-color:#94c83d}
 </style>
 </head>
 <body>
@@ -64,7 +64,7 @@ extension=curl
 extension=zip</pre>
 <p>همچنین مطمئن شوید <code>extension_dir</code> به پوشه <code>ext</code> در محل نصب PHP اشاره می‌کند و فایل‌های dll در آن وجود دارند.</p>
 <?php else: ?>
-<p style="color:#258a57"> نیازمندی‌های اصلی برقرار است. <?php if (!$openssl || !$curl): ?>برای پوش نوتیفیکیشن کامل، افزونه‌های علامت‌خورده را هم فعال کنید.<?php endif; ?></p>
+<p style="color:#94c83d"> نیازمندی‌های اصلی برقرار است. <?php if (!$openssl || !$curl): ?>برای پوش نوتیفیکیشن کامل، افزونه‌های علامت‌خورده را هم فعال کنید.<?php endif; ?></p>
 <?php endif; ?>
 <p><a href="index.php">→ بازگشت به سایت</a></p>
 </div>

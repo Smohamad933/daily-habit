@@ -19,7 +19,7 @@ if ($withDemo) {
             $uid = (int)$pdo->lastInsertId();
 
             // عادت‌ها
-            $habits = [['تمرین آواز خوانی', '#ef4767'], ['مطالعه برنامه‌نویسی', '#3e7eaa'], ['ورزش و باشگاه', '#258a57']];
+            $habits = [['تمرین آواز خوانی', '#ef4767'], ['مطالعه برنامه‌نویسی', '#3e7eaa'], ['ورزش و باشگاه', '#94c83d']];
             $hids = [];
             foreach ($habits as [$t, $c]) {
                 $pdo->prepare("INSERT INTO habits (user_id,title,color) VALUES (?,?,?)")->execute([$uid, $t, $c]);
@@ -108,7 +108,7 @@ if ($withDemo) {
 <title>نصب</title><style>
 body{font-family:Tahoma,'Segoe UI';background:#0f1220;color:#eef0fa;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
 .card{background:#181c30;border:1px solid #2a2f4a;border-radius:16px;padding:34px;max-width:520px;text-align:center}
-a{display:inline-block;background:#12633e;color:#fff;padding:11px 26px;border-radius:10px;text-decoration:none;margin:6px}
+a{display:inline-block;background:#7652d6;color:#fff;padding:11px 26px;border-radius:10px;text-decoration:none;margin:6px}
 a.ghost{background:#232842}code{background:#232842;padding:2px 8px;border-radius:6px;direction:ltr;display:inline-block}
 </style></head><body><div class="card">
 <h1><?= app_icon('check-circle') ?> نصب انجام شد</h1>

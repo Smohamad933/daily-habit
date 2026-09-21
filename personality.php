@@ -66,9 +66,9 @@ document.querySelectorAll('.opt-grid label').forEach(l => l.addEventListener('cl
 }));
 <?php if ($result): ?>
 window.CHART_DEFS = [{ id: 'pchart', type: 'donut', items: [
-  { label: 'منظم', value: <?= (int)$result['scores']['planner'] ?>, color: '#12633e' },
+  { label: 'منظم', value: <?= (int)$result['scores']['planner'] ?>, color: '#7652d6' },
   { label: 'منعطف', value: <?= (int)$result['scores']['flexible'] ?>, color: '#b57926' },
-  { label: 'اجتماعی', value: <?= (int)$result['scores']['social'] ?>, color: '#258a57' },
+  { label: 'اجتماعی', value: <?= (int)$result['scores']['social'] ?>, color: '#94c83d' },
   { label: 'متمرکز', value: <?= (int)$result['scores']['focused'] ?>, color: '#3e7eaa' }
 ], opts: { center: 'شما' } }];
 <?php endif; ?>

@@ -27,7 +27,7 @@ $dailyLabels = array_map(fn($d) => fa_num($d['day']), $rep['daily_series']);
 $dailyValues = array_column($rep['daily_series'], 'percent');
 
 $reasonItems = [];
-$palette = ['#12633e', '#258a57', '#b57926', '#3e7eaa', '#6e8f76', '#a15c5c'];
+$palette = ['#7652d6', '#94c83d', '#b57926', '#3e7eaa', '#8b76b7', '#a15c5c'];
 foreach ($rep['reasons'] as $i => $r) {
     $reasonItems[] = ['label' => $r['label'], 'value' => $r['count'], 'color' => $palette[$i % count($palette)]];
 }

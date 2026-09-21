@@ -11,6 +11,16 @@ $month = ai_range_stats($uid, $monthStart, $today);
 [$ws, $we] = j_week_bounds($jy, $jm, $jd);
 $week = ai_range_stats($uid, $ws, $we);
 $delta = $month['percent'] - $month['prev_percent'];
+$rail = [];
+for ($offset = -2; $offset <= 2; $offset++) {
+    [$ry, $rm, $rd] = j_add_days($jy, $jm, $jd, $offset);
+    $rail[] = [
+        'date' => j_str($ry, $rm, $rd),
+        'day' => $rd,
+        'month' => j_month_name($rm),
+        'today' => $offset === 0,
+    ];
+}
 
 // عادت‌های امروز
 $habits = db()->query("SELECT * FROM habits WHERE user_id=$uid AND archived=0 ORDER BY id")->fetchAll();
@@ -39,8 +49,25 @@ include __DIR__ . '/includes/header.php';
   <a class="btn sm ghost" style="margin-inline-start:auto" href="<?= url('planner.php') ?>"> پلنر</a>
 </div>
 
+<div class="date-rail">
+  <div class="date-rail-title"><b>برنامه امروز</b><small><?= j_format($today, false) ?></small></div>
+  <div class="date-pills">
+    <?php foreach ($rail as $dayItem): ?>
+      <a class="date-pill <?= $dayItem['today'] ? 'is-today' : '' ?>" href="<?= url('planner.php') ?>?d=<?= urlencode($dayItem['date']) ?>">
+        <span><?= $dayItem['today'] ? 'امروز' : e($dayItem['month']) ?></span>
+        <b><?= fa_num($dayItem['day']) ?></b>
+      </a>
+    <?php endforeach; ?>
+  </div>
+</div>
+
 <!-- کارت قهرمان: امتیاز امروز -->
 <div class="card pad-lg" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div class="summary-head">
+    <span class="summary-kicker">پیشرفت روزانه</span>
+    <h2>کارهای امروز</h2>
+    <small><?= fa_num($day['done_count']) ?> از <?= fa_num($day['total']) ?> تسک انجام شده</small>
+  </div>
   <div class="ring" id="todayRing"></div>
   <div class="grid stats-row" style="flex:1;min-width:230px;grid-template-columns:repeat(3,1fr);gap:8px;margin:0">
     <div class="stat"><div class="num"><?= pct($day['percent']) ?></div><div class="lbl">امروز</div></div>

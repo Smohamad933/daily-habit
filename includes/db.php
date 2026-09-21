@@ -60,7 +60,7 @@ function db_init(PDO $pdo): void {
         user_id INTEGER NOT NULL,
         title TEXT NOT NULL,
         description TEXT DEFAULT '',
-        color TEXT DEFAULT '#12633e',
+        color TEXT DEFAULT '#7652d6',
         archived INTEGER DEFAULT 0,
         created_at TEXT DEFAULT (datetime('now','localtime'))
     )");

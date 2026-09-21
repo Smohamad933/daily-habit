@@ -15,7 +15,7 @@ $moreTabs = ['more', 'tasks', 'habits', 'notes', 'goals', 'agents', 'calendar', 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title><?= e($page_title ?? '') ?> | <?= e($siteName) ?></title>
 <link rel="manifest" href="<?= url('manifest.php') ?>">
-<meta name="theme-color" content="#12633e">
+<meta name="theme-color" content="#7652d6">
 <link rel="stylesheet" href="<?= url('assets/css/style.css') ?>">
 </head>
 <body>

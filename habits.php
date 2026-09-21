@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_check()) {
     $act = $_POST['act'] ?? '';
     if ($act === 'add') {
         $title = trim(mb_substr($_POST['title'] ?? '', 0, 120));
-        $color = preg_match('/^#[0-9a-fA-F]{6}$/', $_POST['color'] ?? '') ? $_POST['color'] : '#12633e';
+        $color = preg_match('/^#[0-9a-fA-F]{6}$/', $_POST['color'] ?? '') ? $_POST['color'] : '#7652d6';
         if ($title !== '') {
             db()->prepare("INSERT INTO habits (user_id,title,description,color) VALUES (?,?,?,?)")
                 ->execute([$uid, $title, trim($_POST['description'] ?? ''), $color]);
@@ -63,7 +63,7 @@ include __DIR__ . '/includes/header.php';
     <?= csrf_field() ?><input type="hidden" name="act" value="add">
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input type="text" name="title" required placeholder="مثلاً: تمرین آواز خوانی" style="flex:2;min-width:170px">
-      <input type="color" name="color" value="#12633e" style="width:52px;height:44px;padding:4px;flex:none">
+      <input type="color" name="color" value="#7652d6" style="width:52px;height:44px;padding:4px;flex:none">
       <button class="btn">ساخت</button>
     </div>
     <input type="text" name="description" placeholder="چرا این عادت مهمه؟ (اختیاری)" class="mt" style="margin-top:8px">
